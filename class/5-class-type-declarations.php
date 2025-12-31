@@ -1,30 +1,28 @@
 <?php
-
-/
-
 /*
-Following types can be used in method arguments , returns etc 
-null
-bool
-int
-float (floating-point number)
-string
-array
-object
+
+ Class type declarations - When classes are used in method arguments ,  method returns etc  . Its 
+this example
+
 */
+
+class Order {
+    public $product = [];
+    public function add_to_cart($product){}
+    
+}
 
 class Product
 {   
-    public $name = "soap";
-    public $price = 10;
+    public $name ;
+    public $price ;
     
 
   public function __construct(string $name  , int $price){
     $this->name = $name;
     $this->price = $price;
-
-
     }
+    
     public function price_as_currency($divisor = 1 , $currency_symbol = '$') {
         $price_as_currency = ($this->price/$divisor).$currency_symbol;
         echo $price_as_currency;

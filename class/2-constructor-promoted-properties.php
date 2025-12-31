@@ -2,8 +2,8 @@
 
 class Product
 {   
-    // public $name = "soap";
-    // public $price = 10;
+    // public $name;
+    // public $price;
 
     //  public function __construct( $name ="test" ,  $price = 10 ){
     //     $this->name;
@@ -17,7 +17,7 @@ class Product
     // $this->
 
 
-    public function __construct(public $name ="test" , public $price = 10 ){
+    public function __construct(public $name ="test" , public $price = 10 ){ // contsructor promoted properties
 
     }
     public function price_as_currency($divisor = 1 , $currency_symbol = '$') {
