@@ -8,7 +8,9 @@ this example
 
 class Order {
     public $product = [];
-    public function add_to_cart($product){}
+    public function add_to_cart(Product $product){ // Class Type declaration
+        $this->product[]=$product;
+    }
     
 }
 
@@ -17,19 +19,24 @@ class Product
     public $name ;
     public $price ;
     
-
-  public function __construct(string $name  , int $price){
+    public function __construct(string $name  , int $price){
     $this->name = $name;
     $this->price = $price;
     }
-    
-    public function price_as_currency($divisor = 1 , $currency_symbol = '$') {
-        $price_as_currency = ($this->price/$divisor).$currency_symbol;
-        echo $price_as_currency;
-    }
 }
 
-/*To prevent type conversion eg string to integer use declare(strict_types=1);*/
 
-$product1 = new Product([5,6] ,'b' );// error as first argument array 
-var_dump($product1);
+$order = new Order;
+$product = new Product('lux' , 17 );
+
+//This is the way to pass object to another object's method
+$order->add_to_cart($product);
+var_dump($order);
+
+//Instead of an object you can also erroneously pass say a string which might cause error on code later
+//This is prevented using class type declaration of the class name in add_to_cart method in Order Class
+$order->add_to_cart("miss");
+var_dump($order);
+
+
+
