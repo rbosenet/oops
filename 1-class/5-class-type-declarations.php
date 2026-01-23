@@ -6,7 +6,8 @@ this example
 
 */
 
-class Order {
+class Order 
+{
     public $product = [];
     public function add_to_cart(Product $product){ // Class Type declaration
         $this->product[]=$product;
