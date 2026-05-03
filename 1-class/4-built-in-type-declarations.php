@@ -8,7 +8,7 @@ int
 float (floating-point number)
 string
 array
-object //not sure about this , didnt use this yet
+object // pass object of any class
 
 
 */

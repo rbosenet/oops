@@ -1,0 +1,18 @@
+<?php
+
+    // get_class() : Gets the name of the class of the given object.
+    // https://www.php.net/manual/en/function.get-class.php
+
+    class BaseClass {
+
+        public function get_class_name( object)
+    }
+
+
+
+
+
+
+
+
+?>

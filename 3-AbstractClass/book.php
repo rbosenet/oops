@@ -1,10 +1,11 @@
 <?php
 
-class Book 
+abstract class Book 
 {
     protected $title;
     protected $author;
     protected $price;
+    protected $shipping;
 
     public function __construct( string $title , string $author , int $price ) 
     {
@@ -28,6 +29,7 @@ class Book
     {
         return "{$this->title}, {$this->author }, {$this->price } ";
     }
+    abstract function getShipping():string;
 }
 
 ?>
