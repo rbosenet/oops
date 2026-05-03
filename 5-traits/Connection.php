@@ -1,9 +1,8 @@
 <?php 
-
-
+require_once "Printable.php";
 class Connection {
-
-    public static int $count =0;
+    use Printable;// use trait 
+    public static int $count = 0;
 
     public function __construct() {
         self::$count++;
@@ -13,11 +12,9 @@ class Connection {
     }
 }
    
-$connection = new Connection();
-$connection = new Connection();
-$connection = new Connection();
-$connection = new Connection();
-echo $connection::getCount();
+
+
+
 
 
 ?>
