@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PHP Composition, DI and Polymorphism - Quick Table</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f4f6f8;
+        margin: 0;
+        padding: 70px 48px;
+        color: #000;
+      }
+
+      h1 {
+        text-align: center;
+        font-size: 40px;
+        margin: 0 0 36px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        box-shadow: 0 1px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      th {
+        background: #2878b8;
+        color: #fff;
+        text-align: left;
+        font-size: 20px;
+        padding: 16px;
+      }
+
+      td {
+        vertical-align: top;
+        border: 1px solid #d8d8d8;
+        padding: 18px 16px;
+        font-size: 20px;
+        line-height: 1.35;
+      }
+
+      td:first-child {
+        width: 24%;
+        font-weight: 700;
+      }
+
+      pre {
+        margin: 0;
+        padding: 16px;
+        overflow-x: auto;
+        background: #f0f3f7;
+        border-radius: 6px;
+        font-size: 15px;
+        line-height: 1.45;
+      }
+
+      code {
+        font-family: Consolas, "Courier New", monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>
+      PHP Composition, Dependency Injection and Polymorphism - Quick Table
+    </h1>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Design / Pattern</th>
+          <th>Code</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1. Single Responsibility Principle broken</td>
+          <td>
+            <pre><code>&lt;?php
+
+class Song
+{
+    public function __construct(
+        public string $title,
+        public string $artist,
+        public int $duration,
+    ) {
+    }
+
+    public function writeSongData(): string
+    {
+        // Problem:
+        // Song is responsible for song data AND text formatting.
+        return "Title is " . $this-&gt;title .
+            " Artist is " . $this-&gt;artist .
+            " Duration is " . $this-&gt;duration;
+    }
+
+    public function writeJsonData(): string
+    {
+        // Problem:
+        // Song is also responsible for JSON formatting.
+        // This breaks Single Responsibility Principle.
+        return json_encode($this);
+    }
+}
+
+// Memory:
+// One class should have one main reason to change.
+// Here Song changes if song data changes OR output format changes.
+</code></pre>
+          </td>
+        </tr>
+
+        <tr>
+          <td>2. Composition without dependency injection</td>
+          <td>
+            <pre><code>&lt;?php
+
+class Song
+{
+    private SongDataWriter $textWriter;
+    private JsonDataWriter $jsonWriter;
+
+    public function __construct(
+        public string $title,
+        public string $artist,
+        public int $duration,
+    ) {
+        // No dependency injection:
+        // Song creates its own dependency inside the constructor.
+        $this-&gt;textWriter = new SongDataWriter();
+        $this-&gt;jsonWriter = new JsonDataWriter();
+    }
+
+    public function writeText(): string
+    {
+        return $this-&gt;textWriter-&gt;write($this);
+    }
+
+    public function writeJson(): string
+    {
+        return $this-&gt;jsonWriter-&gt;write($this);
+    }
+}
+
+// Memory:
+// Composition = Song HAS writer objects. that is class made of other classes.
+// No DI = Song creates those writer objects itself.
+</code></pre>
+          </td>
+        </tr>
+
+        <tr>
+          <td>3. Composition with dependency injection</td>
+          <td>
+            <pre><code>&lt;?php
+
+class Song
+{
+    public function __construct(
+        public string $title,
+        public string $artist,
+        public int $duration,
+        private SongDataWriter $writer,
+    ) {
+        // Dependency injection:
+        // The writer comes from outside the Song class.
+    }
+
+    public function write(): string
+    {
+        return $this-&gt;writer-&gt;write($this);
+    }
+}
+
+$song = new Song(
+    "I Disappear",
+    "Metallica",
+    300,
+    new SongDataWriter()
+);
+
+// Memory:
+// DI = do not create dependency inside the class.
+// Pass the dependency into the class.
+</code></pre>
+          </td>
+        </tr>
+
+        <tr>
+          <td>4. Polymorphism with interface</td>
+          <td>
+            <pre><code>&lt;?php
+
+interface DataWriterInterface
+{
+    public function write(Song $song): string;
+}
+
+class Song
+{
+    public function __construct(
+        public string $title,
+        public string $artist,
+        public int $duration,
+        private DataWriterInterface $writer,
+    ) {
+        // Song does not care which writer class it receives.
+        // It only cares that the class follows the interface.
+    }
+
+    public function write(): string
+    {
+        return $this-&gt;writer-&gt;write($this);
+    }
+}
+
+class SongDataWriter implements DataWriterInterface
+{
+    public function write(Song $song): string
+    {
+        return "Title is " . $song-&gt;title;
+    }
+}
+
+class JsonDataWriter implements DataWriterInterface
+{
+    public function write(Song $song): string
+    {
+        return json_encode($song);
+    }
+}
+
+$textSong = new Song("I Disappear", "Metallica", 300, new SongDataWriter());
+$jsonSong = new Song("I Disappear", "Metallica", 300, new JsonDataWriter());
+
+// Memory:
+// Polymorphism = same method call, different behavior.
+// Interface = classes promise to have the same method.
+</code></pre>
+          </td>
+        </tr>
+
+        <tr>
+          <td>5. Polymorphism with inheritance</td>
+          <td>
+            <pre><code>&lt;?php
+
+abstract class BaseDataWriter
+{
+    abstract public function write(Song $song): string;
+}
+
+class Song
+{
+    public function __construct(
+        public string $title,
+        public string $artist,
+        public int $duration,
+        private BaseDataWriter $writer,
+    ) {
+        // Song accepts the parent type.
+        // Any child of BaseDataWriter can be used here.
+    }
+
+    public function write(): string
+    {
+        return $this-&gt;writer-&gt;write($this);
+    }
+}
+
+class SongDataWriter extends BaseDataWriter
+{
+    public function write(Song $song): string
+    {
+        return "Title is " . $song-&gt;title;
+    }
+}
+
+class JsonDataWriter extends BaseDataWriter
+{
+    public function write(Song $song): string
+    {
+        return json_encode($song);
+    }
+}
+
+$textSong = new Song("I Disappear", "Metallica", 300, new SongDataWriter());
+$jsonSong = new Song("I Disappear", "Metallica", 300, new JsonDataWriter());
+
+// Memory:
+// Inheritance polymorphism = parent type can hold child objects.
+// BaseDataWriter variable can receive SongDataWriter or JsonDataWriter.
+</code></pre>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>
