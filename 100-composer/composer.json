@@ -1,0 +1,17 @@
+{
+  "name": "rajar/100-composer",
+  "require": {
+    "symfony/var-dumper": "^6.0"
+  },
+  "authors": [
+    {
+      "name": "truthsearcher83",
+      "email": "rajarshi.bose@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "App\\": "."
+    }
+  }
+}
